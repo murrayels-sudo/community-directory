@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Directory Data Converter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --teal-900:#1F3A3D;
+    --sage-100:#E7EFE9;
+    --sage-50:#F4F8F5;
+    --white:#FFFFFF;
+    --ink:#24312F;
+    --ink-soft:#5B6A64;
+    --gold-500:#C69C4E;
+    --line:#DCE6DF;
+    --error:#B14545;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--sage-100);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    padding:0 0 60px;
+  }
+  header{
+    background:var(--teal-900);
+    color:var(--sage-50);
+    padding:28px 20px 24px;
+  }
+  header h1{margin:0 0 4px;font-size:1.4rem;}
+  header p{margin:0;font-size:0.9rem;color:#B9CBC3;}
+  main{max-width:680px;margin:0 auto;padding:24px 20px;}
+
+  .dropzone{
+    border:2px dashed var(--line);
+    background:var(--white);
+    border-radius:16px;
+    padding:40px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .dropzone.drag{
+    border-color:var(--gold-500);
+    background:var(--sage-50);
+  }
+  .dropzone p{margin:6px 0;color:var(--ink-soft);}
+  .dropzone strong{color:var(--teal-900);}
+  .dropzone input{display:none;}
+
+  .btn{
+    display:inline-block;
+    padding:12px 20px;
+    border-radius:10px;
+    border:0;
+    font-size:0.95rem;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .btn-primary{background:var(--gold-500);color:var(--teal-900);}
+  .btn-secondary{background:var(--white);color:var(--teal-900);border:1px solid var(--line);}
+  .btn[disabled]{opacity:0.5;cursor:not-allowed;}
+
+  .panel{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    margin-top:18px;
+  }
+  .panel h2{margin:0 0 10px;font-size:1rem;color:var(--teal-900);}
+
+  table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+  th,td{
+    text-align:left;
+    padding:8px 6px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  th{color:var(--ink-soft);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.02em;}
+  .table-wrap{overflow-x:auto;max-height:340px;overflow-y:auto;}
+
+  .row-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+
+  .warn{
+    background:#FCEFD9;
+    color:#7A5A17;
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:0.85rem;
+    margin-top:12px;
+  }
+  .error{
+    background:#F9E4E4;
+    color:var(--error);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:0.85rem;
+    margin-top:12px;
+  }
+  .hint{font-size:0.82rem;color:var(--ink-soft);margin-top:16px;line-height:1.5;}
+  code{background:var(--sage-50);padding:1px 5px;border-radius:4px;font-size:0.85em;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Directory Data Converter</h1>
+  <p>Turn your spreadsheet into directory.json for the Community Directory app</p>
+</header>
+
+<main>
+  <div class="dropzone" id="dropzone">
+    <p><strong>Drop your CSV or Excel file here</strong></p>
+    <p>or click to choose a file</p>
+    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls">
+  </div>
+
+  <div id="messages"></div>
+  <div id="resultPanel"></div>
+
+  <p class="hint">
+    Expected column headers (any order, case doesn't matter):<br>
+    <code>Name of Org</code>, <code>Address</code>, <code>Suburb</code>, <code>Email</code>,
+    <code>Phone</code>, <code>Website</code>, <code>Opening Times</code>, <code>Days</code>,
+    <code>Services Provided</code><br><br>
+    This runs entirely in your browser — nothing is uploaded anywhere. Once you download
+    <code>directory.json</code>, replace the old copy in your GitHub Pages folder and push.
+  </p>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLUMN_MAP = {
+    "name of org": "name", "org": "name", "organisation": "name", "organization": "name", "name": "name",
+    "address": "address",
+    "suburb": "suburb",
+    "email": "email",
+    "phone": "phone", "phone number": "phone",
+    "website": "website",
+    "opening times": "hours", "hours": "hours",
+    "days": "days",
+    "services provided": "services", "services": "services"
+  };
+  var REQUIRED_DISPLAY = ["Name of Org","Address","Suburb","Email","Phone","Website","Opening Times","Days","Services Provided"];
+
+  var dropzone = document.getElementById("dropzone");
+  var fileInput = document.getElementById("fileInput");
+  var messages = document.getElementById("messages");
+  var resultPanel = document.getElementById("resultPanel");
+  var lastOrgs = null;
+
+  dropzone.addEventListener("click", function(){ fileInput.click(); });
+  dropzone.addEventListener("dragover", function(e){ e.preventDefault(); dropzone.classList.add("drag"); });
+  dropzone.addEventListener("dragleave", function(){ dropzone.classList.remove("drag"); });
+  dropzone.addEventListener("drop", function(e){
+    e.preventDefault();
+    dropzone.classList.remove("drag");
+    if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener("change", function(e){
+    if(e.target.files.length) handleFile(e.target.files[0]);
+  });
+
+  function showMessage(html, type){
+    messages.innerHTML = '<div class="' + (type || "warn") + '">' + html + '</div>';
+  }
+  function clearMessages(){ messages.innerHTML = ""; }
+
+  function normalizeRow(rawRow){
+    var out = {};
+    Object.keys(rawRow).forEach(function(key){
+      if(key === undefined || key === null) return;
+      var norm = COLUMN_MAP[String(key).trim().toLowerCase()];
+      if(norm){
+        var val = rawRow[key];
+        out[norm] = (val === undefined || val === null) ? "" : String(val).trim();
+      }
+    });
+    return out;
+  }
+
+  function handleFile(file){
+    clearMessages();
+    resultPanel.innerHTML = "";
+    var name = file.name.toLowerCase();
+
+    var reader = new FileReader();
+    reader.onerror = function(){ showMessage("Couldn't read that file. Please try again.", "error"); };
+
+    if(name.endsWith(".csv")){
+      reader.onload = function(e){ parseCSVText(e.target.result); };
+      reader.readAsText(file);
+    } else if(name.endsWith(".xlsx") || name.endsWith(".xls")){
+      reader.onload = function(e){ parseWorkbook(e.target.result); };
+      reader.readAsArrayBuffer(file);
+    } else {
+      showMessage("Please choose a .csv or .xlsx file.", "error");
+    }
+  }
+
+  function parseCSVText(text){
+    // simple CSV parser handling quoted fields
+    var rows = [];
+    var i = 0, field = "", row = [], inQuotes = false;
+    text = text.replace(/\r\n/g, "\n").replace(/^\uFEFF/, "");
+    while(i < text.length){
+      var c = text[i];
+      if(inQuotes){
+        if(c === '"'){
+          if(text[i+1] === '"'){ field += '"'; i += 2; continue; }
+          inQuotes = false; i++; continue;
+        }
+        field += c; i++; continue;
+      } else {
+        if(c === '"'){ inQuotes = true; i++; continue; }
+        if(c === ','){ row.push(field); field = ""; i++; continue; }
+        if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+        field += c; i++; continue;
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    rows = rows.filter(function(r){ return r.length > 1 || (r[0] !== undefined && r[0] !== ""); });
+
+    if(rows.length < 2){
+      showMessage("That file doesn't look like it has any data rows.", "error");
+      return;
+    }
+    var headers = rows[0];
+    var objRows = rows.slice(1).map(function(r){
+      var obj = {};
+      headers.forEach(function(h, idx){ obj[h] = r[idx]; });
+      return obj;
+    });
+    processRows(objRows);
+  }
+
+  function parseWorkbook(arrayBuffer){
+    try{
+      var wb = XLSX.read(arrayBuffer, { type: "array" });
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+      processRows(rows);
+    } catch(e){
+      showMessage("Couldn't parse that Excel file: " + e.message, "error");
+    }
+  }
+
+  function processRows(rawRows){
+    var normalized = rawRows.map(normalizeRow).filter(function(r){ return r.name; });
+
+    if(normalized.length === 0){
+      showMessage("No rows with a recognisable \"Name of Org\" column were found. Check your column headers match the expected list below.", "error");
+      return;
+    }
+
+    var foundFields = new Set();
+    normalized.forEach(function(r){ Object.keys(r).forEach(function(k){ foundFields.add(k); }); });
+    var missing = REQUIRED_DISPLAY.filter(function(label){
+      var key = COLUMN_MAP[label.toLowerCase()];
+      return !foundFields.has(key);
+    });
+
+    var orgs = normalized.map(function(r, idx){
+      return {
+        id: String(idx + 1),
+        name: r.name || "",
+        address: r.address || "",
+        suburb: r.suburb || "",
+        email: r.email || "",
+        phone: r.phone || "",
+        website: r.website || "",
+        days: r.days || "",
+        hours: r.hours || "",
+        services: r.services || ""
+      };
+    });
+
+    lastOrgs = orgs;
+
+    if(missing.length){
+      showMessage("Heads up — no column found for: " + missing.join(", ") + ". Those fields will be blank in the output.", "warn");
+    } else {
+      clearMessages();
+    }
+
+    renderPreview(orgs);
+  }
+
+  function renderPreview(orgs){
+    var rowsHtml = orgs.slice(0, 50).map(function(o){
+      return "<tr>" +
+        "<td>" + escapeHtml(o.name) + "</td>" +
+        "<td>" + escapeHtml(o.suburb) + "</td>" +
+        "<td>" + escapeHtml(o.phone) + "</td>" +
+        "<td>" + escapeHtml(o.days) + "</td>" +
+        "<td>" + escapeHtml(o.hours) + "</td>" +
+      "</tr>";
+    }).join("");
+
+    var moreNote = orgs.length > 50 ? "<p class=\"hint\">Showing first 50 of " + orgs.length + " rows — all " + orgs.length + " will be included in the download.</p>" : "";
+
+    resultPanel.innerHTML =
+      '<div class="panel">' +
+        '<h2>' + orgs.length + ' organisation' + (orgs.length === 1 ? "" : "s") + ' ready</h2>' +
+        '<div class="table-wrap"><table>' +
+          '<thead><tr><th>Name</th><th>Suburb</th><th>Phone</th><th>Days</th><th>Hours</th></tr></thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table></div>' +
+        moreNote +
+        '<div class="row-actions">' +
+          '<button class="btn btn-primary" id="downloadBtn">Download directory.json</button>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById("downloadBtn").addEventListener("click", downloadJSON);
+  }
+
+  function downloadJSON(){
+    if(!lastOrgs) return;
+    var now = new Date();
+    var pad = function(n){ return String(n).padStart(2, "0"); };
+    var version = now.getUTCFullYear() + "-" + pad(now.getUTCMonth()+1) + "-" + pad(now.getUTCDate()) +
+      "T" + pad(now.getUTCHours()) + ":" + pad(now.getUTCMinutes()) + ":" + pad(now.getUTCSeconds()) + "Z";
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var display = now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear();
+
+    var output = { version: version, updated_display: display, orgs: lastOrgs };
+    var blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "directory.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function escapeHtml(str){
+    var d = document.createElement("div");
+    d.textContent = str || "";
+    return d.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>
