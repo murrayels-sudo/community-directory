@@ -1,12 +1,12 @@
 {
-  "version": "2026-07-31T06:36:59Z",
-  "updated_display": "31 Jul 2026",
+  "version": "2026-08-01T05:41:52Z",
+  "updated_display": "1 Aug 2026",
   "orgs": [
     {
       "id": "1",
       "name": "Coast Shelter",
       "address": "346 Mann Street",
-      "suburb": "North Gosford",
+      "suburb": "North Gosford, NSW, 2250",
       "email": "",
       "phone": "02 4325 3540",
       "website": "",
@@ -18,7 +18,7 @@
       "id": "2",
       "name": "Uniting Doorways",
       "address": "38 Pacific Highway",
-      "suburb": "Wyong",
+      "suburb": "Wyong, NSW, 2250",
       "email": "",
       "phone": "02 4386 4846",
       "website": "",
@@ -46,7 +46,7 @@
       "email": "",
       "phone": "",
       "website": "",
-      "days": "",
+      "days": "7 days",
       "hours": "24/7",
       "services": "24/7 crisis support and temporary accommodation for escaping domestic violence"
     },
@@ -58,9 +58,21 @@
       "email": "",
       "phone": "1800 424 830",
       "website": "",
-      "days": "",
+      "days": "7 days",
       "hours": "24/7",
       "services": "specialized youth crisis housing line"
+    },
+    {
+      "id": "6",
+      "name": "Gosford CBD Community Hub",
+      "address": "Waterfall ArcadeSte A/201 Mann St,",
+      "suburb": "Gosford NSW 2250",
+      "email": "GCCH@wnci.com.au",
+      "phone": "02 4326 7359",
+      "website": "",
+      "days": "Mon - Fri",
+      "hours": "9am to 3pm",
+      "services": ""
     }
   ]
 }
