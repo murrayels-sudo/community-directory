@@ -1,6 +1,6 @@
 {
-  "version": "2026-08-01T05:41:52Z",
-  "updated_display": "1 Aug 2026",
+  "version": "2026-08-02T00:03:00Z",
+  "updated_display": "2 Aug 2026",
   "orgs": [
     {
       "id": "1",
@@ -36,7 +36,7 @@
       "website": "",
       "days": "",
       "hours": "",
-      "services": "statewide homelessness information and emergency accommodation referral service"
+      "services": "Statewide homelessness information and emergency accommodation referral service"
     },
     {
       "id": "4",
@@ -60,19 +60,19 @@
       "website": "",
       "days": "7 days",
       "hours": "24/7",
-      "services": "specialized youth crisis housing line"
+      "services": "Specialized youth crisis housing line"
     },
     {
       "id": "6",
       "name": "Gosford CBD Community Hub",
-      "address": "Waterfall ArcadeSte A/201 Mann St,",
+      "address": "Waterfall Arcade - Ste A/201 Mann St,",
       "suburb": "Gosford NSW 2250",
       "email": "GCCH@wnci.com.au",
       "phone": "02 4326 7359",
       "website": "",
       "days": "Mon - Fri",
       "hours": "9am to 3pm",
-      "services": ""
+      "services": "Food outlet, Councelling services."
     }
   ]
 }
