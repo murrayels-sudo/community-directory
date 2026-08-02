@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-02T00:03:00Z",
+  "version": "2026-08-02T00:33:24Z",
   "updated_display": "2 Aug 2026",
   "orgs": [
     {
@@ -73,6 +73,42 @@
       "days": "Mon - Fri",
       "hours": "9am to 3pm",
       "services": "Food outlet, Councelling services."
+    },
+    {
+      "id": "7",
+      "name": "Wyong Youth Refuge",
+      "address": "346 Mann St,",
+      "suburb": "North Gosford NSW 2250",
+      "email": "",
+      "phone": "tel:02 4325 3540, (Press option 1 intake for Client Referral)",
+      "website": "http://coastshelter.org.au/",
+      "days": "Mon - Sun",
+      "hours": "24/7 - Case Managers 7:00am-11:00pm Mon-Sun",
+      "services": "Crisis youth refuge which provides temporary accommodation and support to five homeless young women and men aged between 16 and 24. Emergency Services."
+    },
+    {
+      "id": "8",
+      "name": "Allambi Care",
+      "address": "28 Fraser Parade,",
+      "suburb": "Charlestown, NSW, 2290",
+      "email": "enquiries@allambicare.org.au",
+      "phone": "02 4944 5900",
+      "website": "https://www.allambicare.org.au/contact#ContactLocations",
+      "days": "",
+      "hours": "24/7",
+      "services": "Foster care support"
+    },
+    {
+      "id": "9",
+      "name": "Salvation Army",
+      "address": "15-23 Hely Street",
+      "suburb": "Wyong, NSW, 2250",
+      "email": "",
+      "phone": "02 4353 9799",
+      "website": "https://www.salvationarmy.org.au/oasis-youth/",
+      "days": "",
+      "hours": "",
+      "services": "Emergency Services, Domestic Violence Support"
     }
   ]
 }
