@@ -224,6 +224,46 @@
     font-size:0.95rem;
   }
 
+  #nearbySection{
+    margin-top:6px;
+  }
+  .nearby-toggle{
+    display:block;
+    width:100%;
+    background:var(--white);
+    border:1px dashed var(--line);
+    color:var(--teal-900);
+    font-weight:600;
+    font-size:0.9rem;
+    padding:13px 16px;
+    border-radius:12px;
+    cursor:pointer;
+    margin-bottom:14px;
+    min-height:44px;
+  }
+  .nearby-toggle:hover{background:var(--sage-50);}
+  .nearby-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .nearby-heading{
+    font-size:0.95rem;
+    color:var(--teal-900);
+    margin:4px 2px 12px;
+  }
+  .nearby-empty{
+    color:var(--ink-soft);
+    font-size:0.88rem;
+    padding:6px 2px 16px;
+  }
+  .nearby-badge{
+    display:inline-block;
+    background:var(--sage-100);
+    color:var(--teal-900);
+    font-size:0.76rem;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:999px;
+    margin-bottom:8px;
+  }
+
   .app-footer{
     text-align:center;
     color:var(--ink-soft);
@@ -350,6 +390,7 @@
   </div>
   <div id="cardList"></div>
   <div class="empty" id="emptyState" style="display:none;">No matching services found. Try a different search or suburb.</div>
+  <div id="nearbySection"></div>
 </main>
 
 <footer class="app-footer">&copy; 2026 MKEApps</footer>
@@ -373,7 +414,36 @@
   "use strict";
 
   var STORAGE_KEY = "communityDirectoryData";
-  var state = { orgs: [], suburb: "All", query: "" };
+  var COORDS_STORAGE_KEY = "communityDirectorySuburbCoords";
+  var NEARBY_RADIUS_KM = 10;
+  var state = { orgs: [], suburb: "All", query: "", suburbCoords: {}, showNearby: false };
+
+  // ---------- Load nearby-suburb coordinates (optional feature data) ----------
+  function loadSuburbCoords(){
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem(COORDS_STORAGE_KEY)); } catch(e){}
+    if(cached){ state.suburbCoords = cached; }
+
+    fetch("suburb-coordinates.json", { cache: "no-store" })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        state.suburbCoords = data;
+        localStorage.setItem(COORDS_STORAGE_KEY, JSON.stringify(data));
+        render();
+      })
+      .catch(function(){ /* offline or file missing — nearby feature just won't show */ });
+  }
+
+  function distanceKm(lat1, lng1, lat2, lng2){
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLng = (lng2 - lng1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2) * Math.sin(dLng/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 
   // ---------- Load data: show cache instantly, refresh from network if possible ----------
   function loadDirectory(){
@@ -427,6 +497,7 @@
       chip.type = "button";
       chip.addEventListener("click", function(){
         state.suburb = s;
+        state.showNearby = false;
         buildSuburbChips();
         render();
       });
@@ -523,12 +594,84 @@
 
     if(list.length === 0){
       empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+      list.forEach(function(o){
+        container.appendChild(buildCard(o));
+      });
+    }
+
+    renderNearbySection();
+  }
+
+  function getNearbySuburbs(){
+    var origin = state.suburbCoords[state.suburb];
+    if(!origin) return [];
+    var results = [];
+    Object.keys(state.suburbCoords).forEach(function(name){
+      if(name === state.suburb) return;
+      var c = state.suburbCoords[name];
+      var d = distanceKm(origin.lat, origin.lng, c.lat, c.lng);
+      if(d <= NEARBY_RADIUS_KM) results.push({ suburb: name, distance: d });
+    });
+    results.sort(function(a, b){ return a.distance - b.distance; });
+    return results;
+  }
+
+  function renderNearbySection(){
+    var section = document.getElementById("nearbySection");
+    section.innerHTML = "";
+
+    if(state.suburb === "All") return; // only applies once a specific suburb is chosen
+
+    var nearbySuburbs = getNearbySuburbs();
+    if(nearbySuburbs.length === 0) return; // no coordinate data, or nothing within range
+
+    var distanceBySuburb = {};
+    nearbySuburbs.forEach(function(item){ distanceBySuburb[item.suburb] = item.distance; });
+
+    var toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "nearby-toggle";
+    toggleBtn.textContent = state.showNearby
+      ? "Hide nearby areas"
+      : ("Show nearby areas (within " + NEARBY_RADIUS_KM + "km)");
+    toggleBtn.addEventListener("click", function(){
+      state.showNearby = !state.showNearby;
+      render();
+    });
+    section.appendChild(toggleBtn);
+
+    if(!state.showNearby) return;
+
+    var nearbyOrgs = state.orgs.filter(function(o){
+      if(o.suburb === state.suburb) return false;
+      if(!(o.suburb in distanceBySuburb)) return false;
+      var matchesQuery = !state.query || (o.name || "").toLowerCase().indexOf(state.query) !== -1;
+      return matchesQuery;
+    });
+
+    nearbyOrgs.sort(function(a, b){
+      var da = distanceBySuburb[a.suburb], db = distanceBySuburb[b.suburb];
+      if(da !== db) return da - db;
+      return (a.name || "").localeCompare(b.name || "");
+    });
+
+    var heading = document.createElement("h3");
+    heading.className = "nearby-heading";
+    heading.textContent = "Nearby areas (within " + NEARBY_RADIUS_KM + "km)";
+    section.appendChild(heading);
+
+    if(nearbyOrgs.length === 0){
+      var p = document.createElement("p");
+      p.className = "nearby-empty";
+      p.textContent = "No matching services found in nearby suburbs either.";
+      section.appendChild(p);
       return;
     }
-    empty.style.display = "none";
 
-    list.forEach(function(o){
-      container.appendChild(buildCard(o));
+    nearbyOrgs.forEach(function(o){
+      section.appendChild(buildCard(o, distanceBySuburb[o.suburb]));
     });
   }
 
@@ -538,9 +681,14 @@
     return d.innerHTML;
   }
 
-  function buildCard(o){
+  function buildCard(o, nearbyDistanceKm){
     var el = document.createElement("article");
     el.className = "card";
+
+    var badgeHtml = "";
+    if(typeof nearbyDistanceKm === "number"){
+      badgeHtml = '<div class="nearby-badge">' + esc(o.suburb) + " · " + nearbyDistanceKm.toFixed(1) + 'km away</div>';
+    }
 
     var status = getOpenStatus(o);
     var statusHtml = "";
@@ -568,6 +716,7 @@
     }
 
     el.innerHTML =
+      badgeHtml +
       '<h2>' + esc(o.name) + '</h2>' +
       '<p class="addr">' + esc(addressParts) + '</p>' +
       statusHtml +
@@ -600,10 +749,11 @@
     });
   }
 
-  window.addEventListener("online", function(){ setOffline(false); loadDirectory(); });
+  window.addEventListener("online", function(){ setOffline(false); loadDirectory(); loadSuburbCoords(); });
   window.addEventListener("offline", function(){ setOffline(true); });
 
   loadDirectory();
+  loadSuburbCoords();
 })();
 </script>
 </body>

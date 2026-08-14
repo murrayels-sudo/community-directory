@@ -3,12 +3,13 @@
 // directory.json from cache when offline (network is tried first so
 // updates come through whenever there IS a connection).
 
-const CACHE_NAME = "community-directory-v2";
+const CACHE_NAME = "community-directory-v3";
 const SHELL_FILES = [
   "./",
   "./index.html",
   "./manifest.json",
   "./directory.json",
+  "./suburb-coordinates.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-512-maskable.png",
@@ -37,9 +38,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // directory.json: network-first so updates are picked up the moment
-  // there's a connection, falling back to cache when offline.
-  if (req.url.endsWith("directory.json")) {
+  // directory.json and suburb-coordinates.json: network-first so updates
+  // are picked up the moment there's a connection, falling back to cache
+  // when offline.
+  if (req.url.endsWith("directory.json") || req.url.endsWith("suburb-coordinates.json")) {
     event.respondWith(
       fetch(req)
         .then((res) => {
