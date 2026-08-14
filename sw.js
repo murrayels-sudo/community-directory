@@ -3,7 +3,7 @@
 // directory.json from cache when offline (network is tried first so
 // updates come through whenever there IS a connection).
 
-const CACHE_NAME = "community-directory-v1";
+const CACHE_NAME = "community-directory-v2";
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -12,7 +12,8 @@ const SHELL_FILES = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-512-maskable.png",
-  "./icons/apple-touch-icon.png"
+  "./icons/apple-touch-icon.png",
+  "./qr-code.png"
 ];
 
 self.addEventListener("install", (event) => {

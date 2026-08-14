@@ -46,6 +46,12 @@
     padding-top:calc(20px + env(safe-area-inset-top));
     border-radius:0 0 20px 20px;
   }
+  .header-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
   header.top h1{
     margin:0 0 4px;
     font-size:1.35rem;
@@ -57,6 +63,23 @@
     font-size:0.88rem;
     color:#B9CBC3;
   }
+  .share-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.22);
+    color:var(--sage-50);
+    padding:9px 13px;
+    border-radius:10px;
+    font-size:0.85rem;
+    font-weight:600;
+    cursor:pointer;
+    flex-shrink:0;
+    min-height:40px;
+  }
+  .share-btn:hover{background:rgba(255,255,255,0.16);}
+  .share-btn:focus-visible{outline:2px solid var(--gold-500);outline-offset:2px;}
   .search-wrap{
     padding:16px 16px 4px;
     max-width:640px;
@@ -209,6 +232,76 @@
     opacity:0.75;
   }
 
+  .share-overlay{
+    position:fixed;
+    inset:0;
+    background:var(--sage-100);
+    z-index:100;
+    display:none;
+    flex-direction:column;
+    padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+  }
+  .share-overlay.show{display:flex;}
+  .share-overlay-top{
+    display:flex;
+    justify-content:flex-end;
+    padding:14px 0 0;
+  }
+  .close-btn{
+    background:var(--white);
+    border:1px solid var(--line);
+    color:var(--teal-900);
+    width:44px;
+    height:44px;
+    border-radius:12px;
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+  }
+  .close-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .share-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding-bottom:10vh;
+  }
+  .share-content h2{
+    margin:22px 0 6px;
+    font-size:1.3rem;
+    color:var(--teal-900);
+  }
+  .share-content p{
+    margin:0 0 26px;
+    font-size:0.92rem;
+    color:var(--ink-soft);
+    max-width:320px;
+  }
+  .share-qr-box{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+  }
+  .share-qr-box img{
+    display:block;
+    width:min(58vw, 260px);
+    height:min(58vw, 260px);
+  }
+  .share-url{
+    margin-top:22px;
+    font-size:0.85rem;
+    color:var(--teal-900);
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 16px;
+    word-break:break-all;
+    max-width:320px;
+  }
+
   .offline-banner{
     display:none;
     background:#FCEFD9;
@@ -229,8 +322,16 @@
 <div class="offline-banner" id="offlineBanner">You're offline — showing the last saved copy of this directory.</div>
 
 <header class="top">
-  <h1>Community Directory</h1>
-  <p class="sub" id="orgCount">Loading local support services…</p>
+  <div class="header-row">
+    <div>
+      <h1>Community Directory</h1>
+      <p class="sub" id="orgCount">Loading local support services…</p>
+    </div>
+    <button class="share-btn" id="shareBtn" type="button" aria-haspopup="dialog">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+      Share
+    </button>
+  </div>
 </header>
 
 <div class="search-wrap">
@@ -252,6 +353,20 @@
 </main>
 
 <footer class="app-footer">&copy; 2026 MKEApps</footer>
+
+<div class="share-overlay" id="shareOverlay" role="dialog" aria-modal="true" aria-label="Share this app" aria-hidden="true">
+  <div class="share-overlay-top">
+    <button class="close-btn" id="closeShareBtn" type="button" aria-label="Close">&times;</button>
+  </div>
+  <div class="share-content">
+    <div class="share-qr-box">
+      <img src="qr-code.png" alt="QR code linking to the Community Directory app">
+    </div>
+    <h2>Share this app</h2>
+    <p>Anyone can scan this code to open Community Directory and add it to their own phone &mdash; free, and works offline once installed.</p>
+    <div class="share-url">murrayels-sudo.github.io/community-directory</div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -461,6 +576,21 @@
       '<div class="actions">' + actions + '</div>';
 
     return el;
+  }
+
+  // ---------- Share overlay ----------
+  var shareOverlay = document.getElementById("shareOverlay");
+  document.getElementById("shareBtn").addEventListener("click", function(){
+    shareOverlay.classList.add("show");
+    shareOverlay.setAttribute("aria-hidden", "false");
+  });
+  document.getElementById("closeShareBtn").addEventListener("click", closeShare);
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") closeShare();
+  });
+  function closeShare(){
+    shareOverlay.classList.remove("show");
+    shareOverlay.setAttribute("aria-hidden", "true");
   }
 
   // ---------- Service worker ----------
