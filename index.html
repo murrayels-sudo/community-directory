@@ -10,6 +10,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Directory">
+<meta name="author" content="MKEApps">
+<!-- © 2026 MKEApps. All rights reserved. -->
 <style>
   :root{
     --teal-900:#1F3A3D;
@@ -199,6 +201,14 @@
     font-size:0.95rem;
   }
 
+  .app-footer{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:0.74rem;
+    padding:18px 16px 10px;
+    opacity:0.75;
+  }
+
   .offline-banner{
     display:none;
     background:#FCEFD9;
@@ -240,6 +250,8 @@
   <div id="cardList"></div>
   <div class="empty" id="emptyState" style="display:none;">No matching services found. Try a different search or suburb.</div>
 </main>
+
+<footer class="app-footer">&copy; 2026 MKEApps</footer>
 
 <script>
 (function(){
