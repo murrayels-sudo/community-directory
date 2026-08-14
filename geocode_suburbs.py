@@ -29,8 +29,9 @@ import urllib.request
 import urllib.parse
 from pathlib import Path
 
-DIRECTORY_PATH = Path("directory.json")
-COORDS_PATH = Path("suburb-coordinates.json")
+SCRIPT_DIR = Path(__file__).resolve().parent
+DIRECTORY_PATH = SCRIPT_DIR / "directory.json"
+COORDS_PATH = SCRIPT_DIR / "suburb-coordinates.json"
 STATE_COUNTRY_SUFFIX = "NSW, Australia"  # adjust if you expand beyond NSW
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 USER_AGENT = "CommunityDirectoryApp/1.0 (community support directory; contact via GitHub)"
@@ -56,7 +57,7 @@ def geocode(suburb_name):
 
 def main():
     if not DIRECTORY_PATH.exists():
-        sys.exit("directory.json not found \u2014 run this from the project folder.")
+        sys.exit(f"directory.json not found at {DIRECTORY_PATH} \u2014 make sure it's in the same folder as this script.")
 
     directory = load_json(DIRECTORY_PATH, {"orgs": []})
     suburbs = sorted(set(
