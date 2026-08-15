@@ -1,6 +1,6 @@
 {
-  "version": "2026-08-14T07:25:09Z",
-  "updated_display": "14 Aug 2026",
+  "version": "2026-08-15T00:00:56Z",
+  "updated_display": "15 Aug 2026",
   "orgs": [
     {
       "id": "1",
@@ -102,7 +102,7 @@
       "id": "9",
       "name": "Gosford CBD Community Hub",
       "address": "Waterfall Arcade - Ste A/201 Mann St,",
-      "suburb": "Gosford NSW 2250",
+      "suburb": "Gosford, NSW 2250",
       "email": "GCCH@wnci.com.au",
       "phone": "02 4326 7359",
       "website": "",
@@ -258,7 +258,7 @@
       "id": "22",
       "name": "Wyong Youth Refuge",
       "address": "346 Mann St,",
-      "suburb": "North Gosford NSW, 2250",
+      "suburb": "North Gosford, NSW, 2250",
       "email": "",
       "phone": "02 4325 3540, (Press option 1 intake for Client Referral)",
       "website": "http://coastshelter.org.au/",
