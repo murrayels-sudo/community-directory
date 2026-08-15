@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-15T00:00:56Z",
+  "version": "2026-08-15T00:07:33Z",
   "updated_display": "15 Aug 2026",
   "orgs": [
     {
@@ -102,7 +102,7 @@
       "id": "9",
       "name": "Gosford CBD Community Hub",
       "address": "Waterfall Arcade - Ste A/201 Mann St,",
-      "suburb": "Gosford, NSW 2250",
+      "suburb": "Gosford, NSW, 2250",
       "email": "GCCH@wnci.com.au",
       "phone": "02 4326 7359",
       "website": "",
