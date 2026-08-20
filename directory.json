@@ -1,6 +1,6 @@
 {
-  "version": "2026-08-15T13:23:36Z",
-  "updated_display": "15 Aug 2026",
+  "version": "2026-08-20T10:35:21Z",
+  "updated_display": "20 Aug 2026",
   "orgs": [
     {
       "id": "1",
@@ -16,19 +16,7 @@
     },
     {
       "id": "2",
-      "name": "Alcoholics Ananymous",
-      "address": "6/12 William Street",
-      "suburb": "Gosford, NSW, 2250",
-      "email": "",
-      "phone": "02 4323 3890",
-      "website": "",
-      "days": "",
-      "hours": "",
-      "services": ""
-    },
-    {
-      "id": "3",
-      "name": "Allambi Care",
+      "name": "10am to  1pm+B3:B32",
       "address": "28 Fraser Parade,",
       "suburb": "Charlestown, NSW, 2290",
       "email": "enquiries@allambicare.org.au",
@@ -39,7 +27,7 @@
       "services": "Foster care support"
     },
     {
-      "id": "4",
+      "id": "3",
       "name": "Ambulance",
       "address": "",
       "suburb": "",
@@ -51,7 +39,7 @@
       "services": ""
     },
     {
-      "id": "5",
+      "id": "4",
       "name": "Central Coast  NSW Legacy",
       "address": "57 Masons Parade",
       "suburb": "Point Frederick, NSW, 2250",
@@ -63,7 +51,7 @@
       "services": ""
     },
     {
-      "id": "6",
+      "id": "5",
       "name": "Coast Shelter",
       "address": "346 Mann Street",
       "suburb": "North Gosford, NSW, 2250",
@@ -75,7 +63,7 @@
       "services": "Multiple refuges for men, women, families, and youth, community centre for meals"
     },
     {
-      "id": "7",
+      "id": "6",
       "name": "Community SOS Central Coast",
       "address": "2 Pandale Road (Narara Community Centre)",
       "suburb": "Narara, NSW, 2250",
@@ -85,6 +73,18 @@
       "days": "Wednesdays",
       "hours": "12.00 noon- 3pm",
       "services": "Financial Counselling, No Interest Loans, Emergency Accounts Payment Assistance, Emergency Relief, Space 4 Change (Personal counselling), Community Services Information & Referral Kids Helpline."
+    },
+    {
+      "id": "7",
+      "name": "Compass Housing",
+      "address": "2 Reliance Drive",
+      "suburb": "Tuggerah, NSW",
+      "email": "",
+      "phone": "02 4352 4400",
+      "website": "",
+      "days": "",
+      "hours": "",
+      "services": "Social and affordable housing"
     },
     {
       "id": "8",
@@ -100,6 +100,18 @@
     },
     {
       "id": "9",
+      "name": "Dignity",
+      "address": "",
+      "suburb": "",
+      "email": "",
+      "phone": "1300 332 334",
+      "website": "",
+      "days": "",
+      "hours": "",
+      "services": "Emergency guest accommodation, food relief and clothing."
+    },
+    {
+      "id": "10",
       "name": "Domestic Violence Line",
       "address": "",
       "suburb": "",
@@ -111,7 +123,7 @@
       "services": "get hospital care, counselling and family support services, find emergency accommodation for you and your children"
     },
     {
-      "id": "10",
+      "id": "11",
       "name": "Foodcare Wyoming",
       "address": "457 Pacific Highway",
       "suburb": "Wyoming, NSW, 2250",
@@ -123,7 +135,7 @@
       "services": ""
     },
     {
-      "id": "11",
+      "id": "12",
       "name": "Gosford CBD Community Hub",
       "address": "Waterfall Arcade - Ste A/201 Mann St,",
       "suburb": "Gosford, NSW, 2250",
@@ -135,7 +147,7 @@
       "services": ""
     },
     {
-      "id": "12",
+      "id": "13",
       "name": "Gosford Police",
       "address": "1/9-11 Mann Street",
       "suburb": "Gosford, NSW, 2250",
@@ -147,7 +159,7 @@
       "services": "​"
     },
     {
-      "id": "13",
+      "id": "14",
       "name": "Green Point Community Centre",
       "address": "96 Kooland Road",
       "suburb": "Green Point, NSW, 2250",
@@ -159,7 +171,19 @@
       "services": ""
     },
     {
-      "id": "14",
+      "id": "15",
+      "name": "Homes NSW",
+      "address": "36 Alison Road",
+      "suburb": "Wyong, NSW",
+      "email": "",
+      "phone": "1300 468 746",
+      "website": "",
+      "days": "",
+      "hours": "",
+      "services": "Public Housing and rental assistance"
+    },
+    {
+      "id": "16",
       "name": "Kincumber Neighbourhood Centre",
       "address": "1/20 Kincumber Street",
       "suburb": "Kincumber, NSW, 225",
@@ -171,7 +195,7 @@
       "services": ""
     },
     {
-      "id": "15",
+      "id": "17",
       "name": "Liberty Lifehouse",
       "address": "131-135 Henry Parry Drive",
       "suburb": "Gosford, NSW, 2250",
@@ -183,7 +207,7 @@
       "services": "​"
     },
     {
-      "id": "16",
+      "id": "18",
       "name": "Link2Home",
       "address": "",
       "suburb": "",
@@ -195,7 +219,7 @@
       "services": "24/7 crisis support. A statewide telephone service providing information, assessment and referral to specialist homelessness services, temporary accommodation and other appropriate services for people who are homeless or at risk of homelessness."
     },
     {
-      "id": "17",
+      "id": "19",
       "name": "Salvation Army",
       "address": "15-23 Hely Street",
       "suburb": "Wyong, NSW, 2250",
@@ -207,7 +231,7 @@
       "services": ""
     },
     {
-      "id": "18",
+      "id": "20",
       "name": "Salvos Stores",
       "address": "348 Mann Street",
       "suburb": "Gosford, NSW, 2250",
@@ -219,7 +243,7 @@
       "services": "​​"
     },
     {
-      "id": "19",
+      "id": "21",
       "name": "St Vincent de Paul Society",
       "address": "273-275 Mann Street",
       "suburb": "Gosford, NSW, 2250",
@@ -231,7 +255,7 @@
       "services": ""
     },
     {
-      "id": "20",
+      "id": "22",
       "name": "Terrigal Police",
       "address": "13 Church Street",
       "suburb": "Terrigal,NSW, 2260",
@@ -243,7 +267,7 @@
       "services": "​"
     },
     {
-      "id": "21",
+      "id": "23",
       "name": "The Entrance Police",
       "address": "12 Dening Street",
       "suburb": "The Entrance, NSW, 2261",
@@ -255,7 +279,7 @@
       "services": ""
     },
     {
-      "id": "22",
+      "id": "24",
       "name": "Uniting Doorways",
       "address": "38 Pacific Highway",
       "suburb": "Wyong, NSW, 2250",
@@ -267,7 +291,7 @@
       "services": ""
     },
     {
-      "id": "23",
+      "id": "25",
       "name": "Volunteering Central Coast Inc",
       "address": "219A Albany Street North",
       "suburb": "Niagara Park, NSW, 2250",
@@ -279,7 +303,7 @@
       "services": ""
     },
     {
-      "id": "24",
+      "id": "26",
       "name": "Woy Woy Police",
       "address": "49 Blackwall Road",
       "suburb": "Woy Woy, NSW, 2256",
@@ -291,7 +315,19 @@
       "services": ""
     },
     {
-      "id": "25",
+      "id": "27",
+      "name": "Wyoming Emergency Relief Centre",
+      "address": "4 Ronald Avenue",
+      "suburb": "Wyoming, NSW, 2250",
+      "email": "",
+      "phone": "",
+      "website": "",
+      "days": "Mon to Fri",
+      "hours": "10am to  1pm",
+      "services": ""
+    },
+    {
+      "id": "28",
       "name": "Wyong Police",
       "address": "22 Hely Street",
       "suburb": "Wyong, NSW, 2259",
@@ -303,7 +339,7 @@
       "services": ""
     },
     {
-      "id": "26",
+      "id": "29",
       "name": "Wyong Youth Refuge",
       "address": "346 Mann St,",
       "suburb": "North Gosford, NSW, 2250",
@@ -315,7 +351,7 @@
       "services": ""
     },
     {
-      "id": "27",
+      "id": "30",
       "name": "Youth Emergency Accommodation",
       "address": "",
       "suburb": "",
