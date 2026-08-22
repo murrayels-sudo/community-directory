@@ -128,6 +128,9 @@
     <code>Name of Org</code>, <code>Address</code>, <code>Suburb</code>, <code>Email</code>,
     <code>Phone</code>, <code>Website</code>, <code>Opening Times</code>, <code>Days</code>,
     <code>Services Provided</code><br><br>
+    Optional: <code>Temporary Closure</code> \u2014 leave blank normally. If a service is
+    closed, under renovation, etc, put a short note here (e.g. "Temporarily closed") and
+    it'll show clearly over that listing in the app.<br><br>
     This runs entirely in your browser — nothing is uploaded anywhere. Once you download
     <code>directory.json</code>, replace the old copy in your GitHub Pages folder and push.
   </p>
@@ -146,9 +149,13 @@
     "website": "website",
     "opening times": "hours", "hours": "hours",
     "days": "days",
-    "services provided": "services", "services": "services"
+    "services provided": "services", "services": "services",
+    "temporary closure": "closureNote", "temporarily closed": "closureNote",
+    "closure": "closureNote", "closed": "closureNote", "status": "closureNote"
   };
   var REQUIRED_DISPLAY = ["Name of Org","Address","Suburb","Email","Phone","Website","Opening Times","Days","Services Provided"];
+  // "Temporary Closure" is intentionally not in REQUIRED_DISPLAY — it's optional,
+  // so its absence shouldn't trigger the "missing column" warning.
 
   var dropzone = document.getElementById("dropzone");
   var fileInput = document.getElementById("fileInput");
@@ -278,7 +285,8 @@
         website: r.website || "",
         days: r.days || "",
         hours: r.hours || "",
-        services: r.services || ""
+        services: r.services || "",
+        closureNote: r.closureNote || ""
       };
     });
 
@@ -295,12 +303,16 @@
 
   function renderPreview(orgs){
     var rowsHtml = orgs.slice(0, 50).map(function(o){
+      var statusCell = o.closureNote
+        ? '<span style="color:#B14545;font-weight:600;">' + escapeHtml(o.closureNote) + '</span>'
+        : '<span style="color:#5B6A64;">\u2014</span>';
       return "<tr>" +
         "<td>" + escapeHtml(o.name) + "</td>" +
         "<td>" + escapeHtml(o.suburb) + "</td>" +
         "<td>" + escapeHtml(o.phone) + "</td>" +
         "<td>" + escapeHtml(o.days) + "</td>" +
         "<td>" + escapeHtml(o.hours) + "</td>" +
+        "<td>" + statusCell + "</td>" +
       "</tr>";
     }).join("");
 
@@ -310,7 +322,7 @@
       '<div class="panel">' +
         '<h2>' + orgs.length + ' organisation' + (orgs.length === 1 ? "" : "s") + ' ready</h2>' +
         '<div class="table-wrap"><table>' +
-          '<thead><tr><th>Name</th><th>Suburb</th><th>Phone</th><th>Days</th><th>Hours</th></tr></thead>' +
+          '<thead><tr><th>Name</th><th>Suburb</th><th>Phone</th><th>Days</th><th>Hours</th><th>Status</th></tr></thead>' +
           '<tbody>' + rowsHtml + '</tbody>' +
         '</table></div>' +
         moreNote +

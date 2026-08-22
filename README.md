@@ -41,6 +41,7 @@ access to your repo to actually publish it).
 1. Keep your master list in Excel or CSV, with these column headers
    (any order): `Name of Org, Address, Suburb, Email, Phone, Website,
    Opening Times, Days, Services Provided`
+   Optional: `Temporary Closure` — leave blank normally.
 2. Run:
    ```
    python3 convert_csv_to_json.py your_file.csv
@@ -65,6 +66,25 @@ access to your repo to actually publish it).
   an open/closed dot — the hours text still displays normally.
 - All data stays on the device (localStorage) plus whatever GitHub
   Pages serves — no backend, no accounts, no tracking.
+
+## Marking a service as temporarily closed
+If a service closes for a while (renovation, staff shortage, etc),
+put a short note in the `Temporary Closure` column — e.g. "Temporarily
+closed" or "Closed for renovations" — and leave everything else about
+that listing as-is (address, hours, phone) so people can still see
+when it normally reopens or call ahead to check.
+
+When that column has text, the app automatically:
+- Shows a clear amber banner with your exact wording across the top
+  of that card
+- Adds a faint diagonal watermark of the same text across the card
+- Hides the normal "Open now" indicator for that listing (since it
+  would contradict the closure notice)
+- Keeps the phone number, address, and other details visible, in case
+  someone wants to call ahead or check back later
+
+To reopen a service, just clear the `Temporary Closure` cell and
+re-run the converter — the banner disappears automatically.
 
 ## Nearby areas (suburb-coordinates.json)
 The "Show nearby areas" button needs to know where each suburb is.

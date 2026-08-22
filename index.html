@@ -218,11 +218,21 @@
   }
 
   .card{
+    position:relative;
+    overflow:hidden;
     background:var(--white);
     border:1px solid var(--line);
     border-radius:var(--radius);
     padding:16px;
     margin-bottom:14px;
+  }
+  .card.is-closed{
+    border-color:#E6C79A;
+  }
+  .card.is-closed .addr,
+  .card.is-closed .hours-text,
+  .card.is-closed .services{
+    opacity:0.7;
   }
   .card h2{
     margin:0 0 4px;
@@ -330,6 +340,46 @@
     padding:4px 10px;
     border-radius:999px;
     margin-bottom:8px;
+  }
+
+  .closure-ribbon{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    background:#FCEFD9;
+    color:#7A5A17;
+    border:1px solid #E6C79A;
+    font-weight:700;
+    font-size:0.86rem;
+    padding:8px 12px;
+    border-radius:9px;
+    margin-bottom:12px;
+  }
+  .closure-ribbon svg{flex-shrink:0;}
+  .closure-watermark{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .closure-watermark span{
+    display:block;
+    white-space:nowrap;
+    transform:rotate(-24deg);
+    font-size:2.1rem;
+    font-weight:800;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:#7A5A17;
+    opacity:0.09;
+  }
+  .card.is-closed > *:not(.closure-watermark){
+    position:relative;
+    z-index:1;
   }
 
   .app-footer{
@@ -767,12 +817,30 @@
     var el = document.createElement("article");
     el.className = "card";
 
+    var closureNote = (o.closureNote || "").trim();
+    var isClosed = closureNote.length > 0;
+    if(isClosed) el.classList.add("is-closed");
+
     var badgeHtml = "";
     if(typeof nearbyDistanceKm === "number"){
       badgeHtml = '<div class="nearby-badge">' + esc(o.suburb) + " · " + nearbyDistanceKm.toFixed(1) + 'km away</div>';
     }
 
-    var status = getOpenStatus(o);
+    var closureHtml = "";
+    var watermarkHtml = "";
+    if(isClosed){
+      closureHtml = '<div class="closure-ribbon">' +
+        '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+        esc(closureNote) + '</div>';
+      // repeat the note a few times so the diagonal watermark reads clearly
+      // across the full width of the card regardless of text length
+      watermarkHtml = '<div class="closure-watermark" aria-hidden="true"><span>' +
+        (esc(closureNote) + '&nbsp;&nbsp;&nbsp;').repeat(4) + '</span></div>';
+    }
+
+    // Skip the computed open/closed indicator when a closure note is present —
+    // showing "Open now" alongside "Temporarily closed" would be contradictory.
+    var status = isClosed ? null : getOpenStatus(o);
     var statusHtml = "";
     if(status){
       statusHtml = '<div class="status-line ' + (status.open ? "open" : "closed") + '">' +
@@ -798,7 +866,9 @@
     }
 
     el.innerHTML =
+      watermarkHtml +
       badgeHtml +
+      closureHtml +
       '<h2>' + esc(o.name) + '</h2>' +
       '<p class="addr">' + esc(addressParts) + '</p>' +
       statusHtml +

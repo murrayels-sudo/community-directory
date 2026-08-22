@@ -3,7 +3,7 @@
 // directory.json from cache when offline (network is tried first so
 // updates come through whenever there IS a connection).
 
-const CACHE_NAME = "community-directory-v4";
+const CACHE_NAME = "community-directory-v5";
 const SHELL_FILES = [
   "./",
   "./index.html",
