@@ -80,6 +80,74 @@
   }
   .share-btn:hover{background:rgba(255,255,255,0.16);}
   .share-btn:focus-visible{outline:2px solid var(--gold-500);outline-offset:2px;}
+
+  .install-banner{
+    display:none;
+    background:var(--sage-50);
+    border-bottom:1px solid var(--line);
+    padding:12px 16px;
+  }
+  .install-banner.show{display:block;}
+  .install-banner-inner{
+    max-width:640px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .install-banner-icon{
+    flex-shrink:0;
+    width:34px;
+    height:34px;
+    border-radius:9px;
+  }
+  .install-banner-text{
+    flex:1;
+    min-width:0;
+  }
+  .install-banner-text strong{
+    display:block;
+    font-size:0.85rem;
+    color:var(--teal-900);
+    margin-bottom:1px;
+  }
+  .install-banner-text span{
+    display:block;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    line-height:1.35;
+  }
+  .install-banner-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .install-btn{
+    background:var(--gold-500);
+    color:var(--teal-900);
+    border:0;
+    font-weight:700;
+    font-size:0.82rem;
+    padding:9px 14px;
+    border-radius:9px;
+    cursor:pointer;
+    white-space:nowrap;
+    min-height:38px;
+  }
+  .install-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .install-dismiss{
+    background:transparent;
+    border:0;
+    color:var(--ink-soft);
+    font-size:1.2rem;
+    line-height:1;
+    padding:8px;
+    cursor:pointer;
+    min-width:38px;
+    min-height:38px;
+  }
+  .install-dismiss:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
   .search-wrap{
     padding:16px 16px 4px;
     max-width:640px;
@@ -373,6 +441,20 @@
     </button>
   </div>
 </header>
+
+<div class="install-banner" id="installBanner">
+  <div class="install-banner-inner">
+    <svg class="install-banner-icon" viewBox="0 0 24 24" fill="none" stroke="#1F3A3D" stroke-width="1.6"><rect x="2" y="2" width="20" height="20" rx="5" fill="#E7EFE9" stroke="#DCE6DF"/><path d="M12 7v7M9 11l3 3 3-3M8 17h8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="install-banner-text">
+      <strong id="installBannerTitle">Add this to your home screen</strong>
+      <span id="installBannerBody">So you can find it again without needing this link.</span>
+    </div>
+    <div class="install-banner-actions">
+      <button class="install-btn" id="installActionBtn" type="button" style="display:none;">Install</button>
+      <button class="install-dismiss" id="installDismissBtn" type="button" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+</div>
 
 <div class="search-wrap">
   <div class="search-box">
@@ -741,6 +823,73 @@
     shareOverlay.classList.remove("show");
     shareOverlay.setAttribute("aria-hidden", "true");
   }
+
+  // ---------- Install reminder banner ----------
+  // Shown whenever the app is opened as a regular browser tab (e.g. via the
+  // QR code or a shared link) rather than as an installed home-screen app,
+  // so people have a clear way back in instead of losing the tab.
+  (function initInstallBanner(){
+    var DISMISS_KEY = "communityDirectoryInstallDismissedAt";
+    var COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // re-remind after a week, not every visit
+
+    function isStandalone(){
+      return window.matchMedia("(display-mode: standalone)").matches ||
+             window.navigator.standalone === true; // iOS Safari
+    }
+
+    if(isStandalone()) return; // already installed — nothing to do
+
+    var dismissedAt = parseInt(localStorage.getItem(DISMISS_KEY) || "0", 10);
+    if(Date.now() - dismissedAt < COOLDOWN_MS) return; // dismissed recently, don't nag
+
+    var banner = document.getElementById("installBanner");
+    var titleEl = document.getElementById("installBannerTitle");
+    var bodyEl = document.getElementById("installBannerBody");
+    var actionBtn = document.getElementById("installActionBtn");
+    var dismissBtn = document.getElementById("installDismissBtn");
+
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    if(isIOS){
+      titleEl.textContent = "Add this to your home screen";
+      bodyEl.textContent = "Tap the Share icon below, then \u201CAdd to Home Screen\u201D — so you can find this again anytime, even offline.";
+    } else {
+      titleEl.textContent = "Add this to your home screen";
+      bodyEl.textContent = "So you can find it again without needing this link — tap the menu and choose \u201CAdd to Home screen.\u201D";
+    }
+
+    banner.classList.add("show");
+
+    // On Chrome/Android, capture the native install prompt so we can offer
+    // a genuine one-tap "Install" button instead of manual steps.
+    var deferredPrompt = null;
+    window.addEventListener("beforeinstallprompt", function(e){
+      e.preventDefault();
+      deferredPrompt = e;
+      actionBtn.style.display = "inline-block";
+      bodyEl.textContent = "So you can find it again without needing this link.";
+    });
+
+    actionBtn.addEventListener("click", function(){
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.finally(function(){
+        deferredPrompt = null;
+        banner.classList.remove("show");
+      });
+    });
+
+    dismissBtn.addEventListener("click", function(){
+      banner.classList.remove("show");
+      localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    });
+
+    window.addEventListener("appinstalled", function(){
+      banner.classList.remove("show");
+      localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    });
+  })();
 
   // ---------- Service worker ----------
   if("serviceWorker" in navigator){
