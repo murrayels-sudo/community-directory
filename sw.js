@@ -3,7 +3,7 @@
 // directory.json from cache when offline (network is tried first so
 // updates come through whenever there IS a connection).
 
-const CACHE_NAME = "community-directory-v9";
+const CACHE_NAME = "community-directory-v10";
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -18,8 +18,19 @@ const SHELL_FILES = [
 ];
 
 self.addEventListener("install", (event) => {
+  // Fetch every shell file fresh from the network (bypassing the browser's
+  // HTTP cache) so a new version is never filled with an older copy.
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(
+        SHELL_FILES.map((file) =>
+          fetch(new Request(file, { cache: "reload" })).then((res) => {
+            if (!res.ok) throw new Error("Could not fetch " + file);
+            return cache.put(file, res);
+          })
+        )
+      )
+    )
   );
   self.skipWaiting();
 });
@@ -50,6 +61,21 @@ self.addEventListener("fetch", (event) => {
           return res;
         })
         .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // The app page itself: network-first so fixes and new versions arrive
+  // straight away, falling back to the saved copy when offline.
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(new Request(req, { cache: "no-cache" }))
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
+          return res;
+        })
+        .catch(() => caches.match("./index.html").then((c) => c || caches.match(req)))
     );
     return;
   }
