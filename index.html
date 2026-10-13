@@ -390,6 +390,21 @@
     opacity:0.75;
   }
 
+
+  .privacy-link{
+    background:none;border:0;padding:6px 4px;font:inherit;
+    color:var(--teal-900);text-decoration:underline;cursor:pointer;
+  }
+  .privacy-link:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .privacy-content{
+    flex:1;overflow-y:auto;max-width:520px;width:100%;margin:0 auto;
+    padding:4px 0 32px;color:var(--ink);font-size:0.92rem;line-height:1.5;
+  }
+  .privacy-content h2{margin:8px 0 12px;font-size:1.3rem;color:var(--teal-900);}
+  .privacy-content h3{margin:18px 0 4px;font-size:0.98rem;color:var(--teal-900);}
+  .privacy-content p{margin:0 0 6px;color:var(--ink-soft);}
+  .privacy-content a{color:var(--teal-900);}
+
   .share-overlay{
     position:fixed;
     inset:0;
@@ -470,6 +485,16 @@
   }
   .offline-banner.show{display:block;}
 
+  .emergency-bar{
+    background:#E7EFE9;
+    color:var(--teal-900);
+    font-size:0.84rem;
+    text-align:center;
+    padding:8px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  .emergency-bar a{color:var(--teal-900);font-weight:700;}
+
   @media (prefers-reduced-motion:no-preference){
     .card{transition:transform 0.15s ease;}
   }
@@ -477,7 +502,7 @@
 </head>
 <body>
 
-<div class="offline-banner" id="offlineBanner">You're offline — showing the last saved copy of this directory.</div>
+<div class="offline-banner" id="offlineBanner">You're offline. The saved directory still works, but details may have changed since it was last updated.</div>
 
 <header class="top">
   <div class="header-row">
@@ -491,6 +516,8 @@
     </button>
   </div>
 </header>
+
+<div class="emergency-bar" role="note">In immediate danger? Call <a href="tel:000">000</a>.</div>
 
 <div class="install-banner" id="installBanner">
   <div class="install-banner-inner">
@@ -525,7 +552,7 @@
   <div id="nearbySection"></div>
 </main>
 
-<footer class="app-footer">&copy; 2026 MKEApps</footer>
+<footer class="app-footer">&copy; 2026 MKEApps<br>Details can change, so please call ahead where you can.<br><button class="privacy-link" id="privacyBtn" type="button">Privacy</button></footer>
 
 <div class="share-overlay" id="shareOverlay" role="dialog" aria-modal="true" aria-label="Share this app" aria-hidden="true">
   <div class="share-overlay-top">
@@ -538,6 +565,29 @@
     <h2>Share this app</h2>
     <p>Anyone can scan this code to open Community Directory and add it to their own phone &mdash; free, and works offline once installed.</p>
     <div class="share-url">murrayels-sudo.github.io/community-directory</div>
+  </div>
+</div>
+
+<div class="share-overlay" id="privacyOverlay" role="dialog" aria-modal="true" aria-label="Privacy" aria-hidden="true">
+  <div class="share-overlay-top">
+    <button class="close-btn" id="closePrivacyBtn" type="button" aria-label="Close">&times;</button>
+  </div>
+  <div class="privacy-content">
+    <h2>Privacy</h2>
+    <h3>No accounts, no sign-in</h3>
+    <p>You don&rsquo;t give your name or any details to use this app. What you search for or tap is not sent anywhere or recorded.</p>
+    <h3>What is saved on your phone</h3>
+    <p>A copy of the directory, so it works without internet, and a few small settings, such as whether you closed the install reminder. This stays on your phone.</p>
+    <h3>Nearby areas</h3>
+    <p>This uses suburb names only. The app does not ask for your phone&rsquo;s location.</p>
+    <h3>Counting installs</h3>
+    <p>The first time the app is opened from your home screen, it sends one anonymous count to GoatCounter, a privacy-focused counting service. This lets us report how many people have installed it. It does not include your name, searches or a device ID. See <a href="https://www.goatcounter.com/privacy" target="_blank" rel="noopener">goatcounter.com/privacy</a>.</p>
+    <h3>Hosting</h3>
+    <p>The app is hosted on GitHub. Like any website host, GitHub can see technical connection details when the app downloads or checks for updates.</p>
+    <h3>Calls, websites and email</h3>
+    <p>Tapping a phone number, website or email address opens your phone&rsquo;s own calling, web or email app. That organisation then handles your contact.</p>
+    <h3>If someone else might see your phone</h3>
+    <p>The app uses a plain name and icon. To remove it, press and hold the icon and choose to remove or delete it. In an emergency, call 000.</p>
   </div>
 </div>
 
@@ -894,6 +944,19 @@
     shareOverlay.setAttribute("aria-hidden", "true");
   }
 
+  // ---------- Privacy notice ----------
+  var privacyOverlay = document.getElementById("privacyOverlay");
+  document.getElementById("privacyBtn").addEventListener("click", function(){
+    privacyOverlay.classList.add("show");
+    privacyOverlay.setAttribute("aria-hidden", "false");
+  });
+  function closePrivacy(){
+    privacyOverlay.classList.remove("show");
+    privacyOverlay.setAttribute("aria-hidden", "true");
+  }
+  document.getElementById("closePrivacyBtn").addEventListener("click", closePrivacy);
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") closePrivacy(); });
+
   // ---------- Install reminder banner ----------
   // Shown whenever the app is opened as a regular browser tab (e.g. via the
   // QR code or a shared link) rather than as an installed home-screen app,
@@ -959,6 +1022,35 @@
       banner.classList.remove("show");
       localStorage.setItem(DISMISS_KEY, String(Date.now()));
     });
+  })();
+
+  // ---------- Anonymous install counter ----------
+  // Counts new home-screen installs per month, nothing else. The first time
+  // the app is opened from the home screen (while online) it sends one
+  // anonymous event to GoatCounter (no cookies, no personal details, no
+  // device ID). A flag on the phone stops it being sent again.
+  // Set GOATCOUNTER_CODE to your GoatCounter site code to switch it on;
+  // leave it empty and nothing is sent.
+  (function initInstallCount(){
+    var GOATCOUNTER_CODE = ""; /mkeapps/ e.g. "mkeapps" for https://mkeapps.goatcounter.com
+    var FLAG_KEY = "communityDirectoryInstallCounted";
+    if(!GOATCOUNTER_CODE) return;
+    var standalone = window.matchMedia("(display-mode: standalone)").matches ||
+                     window.navigator.standalone === true;
+    if(!standalone) return;
+    try{ if(localStorage.getItem(FLAG_KEY)) return; }catch(e){ return; }
+    function send(){
+      if(!navigator.onLine) return;
+      try{ if(localStorage.getItem(FLAG_KEY)) return; }catch(e){ return; }
+      var img = new Image();
+      img.onload = function(){
+        try{ localStorage.setItem(FLAG_KEY, "1"); }catch(e){}
+      };
+      img.src = "https://" + GOATCOUNTER_CODE + ".goatcounter.com/count?p=new-install&e=1&t=" +
+                encodeURIComponent("New install") + "&rnd=" + Date.now();
+    }
+    send();
+    window.addEventListener("online", send);
   })();
 
   // ---------- Service worker ----------
