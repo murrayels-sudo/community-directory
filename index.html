@@ -1032,6 +1032,7 @@
   // Set GOATCOUNTER_CODE to your GoatCounter site code to switch it on;
   // leave it empty and nothing is sent.
   (function initInstallCount(){
+   try{
     var GOATCOUNTER_CODE = ""; /CommDir/ e.g. "mkeapps" for https://mkeapps.goatcounter.com
     var FLAG_KEY = "communityDirectoryInstallCounted";
     if(!GOATCOUNTER_CODE) return;
@@ -1051,6 +1052,7 @@
     }
     send();
     window.addEventListener("online", send);
+   }catch(err){ /* counting must never stop the app working */ }
   })();
 
   // ---------- Service worker ----------
