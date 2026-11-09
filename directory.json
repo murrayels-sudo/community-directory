@@ -1,6 +1,6 @@
 {
-  "version": "2026-08-31T12:34:01Z",
-  "updated_display": "31 Aug 2026",
+  "version": "2026-11-09T02:09:49Z",
+  "updated_display": "9 Nov 2026",
   "orgs": [
     {
       "id": "1",
@@ -25,7 +25,7 @@
       "website": "https://www.allambicare.org.au/contact#ContactLocations",
       "days": "",
       "hours": "10am to 1pm",
-      "services": "Foster care support",
+      "services": "Foster care support, support for youth",
       "closureNote": ""
     },
     {
@@ -63,7 +63,7 @@
       "phone": "02 4325 3540",
       "website": "",
       "days": "",
-      "hours": "",
+      "hours": "8am to 4pm",
       "services": "Multiple refuges for men, women, families, and youth, community centre for meals",
       "closureNote": ""
     },
@@ -125,7 +125,7 @@
       "address": "",
       "suburb": "",
       "email": "",
-      "phone": "1800 656463",
+      "phone": "1800 656 463",
       "website": "",
       "days": "7 days",
       "hours": "",
@@ -286,7 +286,7 @@
       "days": "",
       "hours": "",
       "services": "​",
-      "closureNote": ""
+      "closureNote": "Rennovations"
     },
     {
       "id": "23",
@@ -390,6 +390,45 @@
       "days": "7 days",
       "hours": "24 hours",
       "services": "24-hour crisis accommodation in our two youth refuges",
+      "closureNote": ""
+    },
+    {
+      "id": "31",
+      "name": "Central Coast Accommodation & Support Service for Women",
+      "address": "",
+      "suburb": "",
+      "email": "",
+      "phone": "02 4326 5395",
+      "website": "",
+      "days": "",
+      "hours": "",
+      "services": "Support for women, families & aboriginal people",
+      "closureNote": ""
+    },
+    {
+      "id": "32",
+      "name": "Central Coast Homeless Youth Assistance",
+      "address": "",
+      "suburb": "",
+      "email": "",
+      "phone": "02 4944 5900",
+      "website": "",
+      "days": "",
+      "hours": "",
+      "services": "Support for young people",
+      "closureNote": ""
+    },
+    {
+      "id": "33",
+      "name": "CatholicCare Diocese of Broken Bay",
+      "address": "10/10 Pioneer Avenue",
+      "suburb": "Tuggerah Business Park, NSW",
+      "email": "",
+      "phone": "1800 324 924",
+      "website": "info@catholiccaredbb.org.au",
+      "days": "",
+      "hours": "",
+      "services": "Provide a range of family support services that directly address family wellbeing, parenting, relationships and more",
       "closureNote": ""
     }
   ]
